@@ -133,7 +133,7 @@ public function calculate(Request $request)
 }
 ```
 
-To customize the display format, you can use the `format` method. The format must be a format supported by [Numbro](http://numbrojs.com/format.html):
+To customize the display format, you can use the `format` method. The format must be a format supported by [Numbro](http://numbrojs.com/old-format.html):
 
 ```php
 public function calculate(Request $request)
@@ -145,7 +145,7 @@ public function calculate(Request $request)
 
 ### Value Ranges
 
-Every value metric class contains a `ranges` method. This method determines the ranges that will be available in the value metric's range selection menu. The array's keys determine the number of days that should be included in the query, while the values determine the "human readable" text that will be placed in the range selection menu. Of course, you are not required to define any ranges at all:
+Every value metric class contains a `ranges` method. This method determines the ranges that will be available in the value metric's range selection menu. The array's keys determine the number of days that should be included in the query, while the values determine the "human readable" text that will be placed in the range selection menu. You are not required to define any ranges at all:
 
 ```php
 /**
@@ -171,6 +171,14 @@ public function ranges()
 
 You may customize these ranges to suit your needs; however, if you are using the built-in "Today", "Month To Date", "Quarter To Date", or "Year To Date" ranges, you should not change their keys.
 :::
+
+### Zero Result Values
+
+By default, Nova will handle results of `0` as a result containing no data. This may not always be correct, which is why you can use the `allowZeroResult` method to prevent this from happening:
+
+```php
+return $this->result(0)->allowZeroResult();
+```
 
 ### Manually Building Value Results
 
@@ -310,7 +318,7 @@ return $this->minByMinutes($request, Order::class, 'total');
 
 ### Trend Ranges
 
-Every trend metric class contains a `ranges` method. This method determines the ranges that will be available in the trend metric's range selection menu. The array's keys determine the number of time interval units (months, weeks, days, etc.) that should be included in the query, while the values determine the "human readable" text that will be placed in the range selection menu. Of course, you are not required to define any ranges at all:
+Every trend metric class contains a `ranges` method. This method determines the ranges that will be available in the trend metric's range selection menu. The array's keys determine the number of time interval units (months, weeks, days, etc.) that should be included in the query, while the values determine the "human readable" text that will be placed in the range selection menu. You are not required to define any ranges at all:
 
 ```php
 /**

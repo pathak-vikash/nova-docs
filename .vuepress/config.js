@@ -39,28 +39,32 @@ module.exports = {
 
   themeConfig: {
     logo: "/assets/img/logo.svg",
-    displayAllHeaders: true,
-    sidebarDepth: 2,
+    displayAllHeaders: false,
+    activeHeaderLinks: false,
+    searchPlaceholder: 'Search...',
+    lastUpdated: 'Last Updated', // string | boolean
+    sidebarDepth: 0,
 
     nav: [
       { text: "Home", link: "https://nova.laravel.com" },
       {
         text: "Version",
         link: "/",
-        items: [{ text: "1.0", link: "/1.0/" }, { text: "2.0", link: "/2.0/" }]
+        items: [{ text: "1.0", link: "/1.0/" }, { text: "2.0", link: "/2.0/" }, { text: "3.0", link: "/3.0/" }]
       }
     ],
 
     sidebar: {
       "/1.0/": require("./1.0"),
-      "/2.0/": require("./2.0")
+      "/2.0/": require("./2.0"),
+      "/3.0/": require("./3.0")
     },
 
     algolia: {
       indexName: 'laravel_nova',
       apiKey: '5aa44fede3f10262000a8c4f046033d5',
       algoliaOptions: {
-        facetFilters: ["version:2.0.0"]
+        facetFilters: ["version:3.0.0"]
       }
     }
   }

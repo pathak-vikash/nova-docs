@@ -44,7 +44,7 @@ Route::post('/photo', function (Request $request) {
 });
 ```
 
-Of course, once the file has been stored, you may retrieve it within your application using the Laravel `Storage` facade:
+Once the file has been stored, you may retrieve it within your application using the Laravel `Storage` facade:
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -207,15 +207,15 @@ File::make('Attachment')
 
 As you can see in the example above, the `store` callback is returning an array of keys and values. These key / value pairs are mapped onto your model instance before it is saved to the database, allowing you to update one or many of the model's database columns after your file is stored.
 
-Here's another example of customizing the storage process. In this example, we're using the `store` method to store the original file in public storage, create thumbnails using Larave's queue system, and finally populating values in the resource's `media` relationship: 
+Here's another example of customizing the storage process. In this example, we're using the `store` method to store the original file in public storage, create thumbnails using Laravel's queue system, and finally populating values in the resource's `media` relationship:
 
 ```php
 use Illuminate\Http\Request;
 
 File::make('Attachment')
     ->store(function (Request $request, $model) {
-        return function () use ($resource, $request) {
-            $media = $resource->media()->updateOrCreate([], [
+        return function () use ($request, $model) {
+            $media = $model->media()->updateOrCreate([], [
                 'path'=> $request->file('attachment')->store('/path', 'public')
             ]);
 
@@ -226,7 +226,7 @@ File::make('Attachment')
 
 #### Invokables
 
-Of course, performing all of your file storage logic within a Closure can cause your resource to become bloated. For that reason, Nova allows you to pass an "invokable" object to the `store` method:
+Performing all of your file storage logic within a Closure can cause your resource to become bloated. For that reason, Nova allows you to pass an "invokable" object to the `store` method:
 
 ```php
 File::make('Attachment')->store(new StoreAttachment);
@@ -248,9 +248,13 @@ class StoreAttachment
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  string  $attribute
+     * @param  string  $requestAttribute
+     * @param  string  $disk
+     * @param  string  $storagePath
      * @return array
      */
-    public function __invoke(Request $request, $model)
+    public function __invoke(Request $request, $model, $attribute, $requestAttribute, $disk, $storagePath)
     {
         return [
             'attachment' => $request->attachment->store('/', 's3'),
@@ -292,7 +296,7 @@ As you can see in the example above, the `delete` callback is returning an array
 
 #### Invokables
 
-Of course, performing all of your file deletion logic within a Closure can cause your resource to become bloated. For that reason, Nova allows you to pass an "invokable" object to the `delete` method:
+Performing all of your file deletion logic within a Closure can cause your resource to become bloated. For that reason, Nova allows you to pass an "invokable" object to the `delete` method:
 
 ```php
 File::make('Attachment')->delete(new DeleteAttachment);
@@ -383,3 +387,20 @@ Image::make('Profile Photo')
 
 By default, Nova will display thumbnails at a width of 32 pixels (64 pixels for "retina displays").
 :::
+
+### Customizing Accepted File Types
+
+By default, the `File` field will allow any files to be selected and uploaded. However, you may customize the accepted file types using the `acceptedTypes` method:
+
+```php
+File::make('Disk Image')->acceptedTypes('.dmg|.exe')
+```
+
+When using the `acceptedTypes` method, Nova is adding the `accepts` attribute to the file picker, meaning that all of these media types are valid:
+
+- `.dmg`
+- `.dmg|.exe|.deb`
+- `image/*`
+- `audio/*`
+- `video/*`
+- All media types listed at http://www.iana.org/assignments/media-types/
